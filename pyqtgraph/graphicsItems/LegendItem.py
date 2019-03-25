@@ -7,6 +7,7 @@ from ..Point import Point
 from .ScatterPlotItem import ScatterPlotItem, drawSymbol
 from .PlotDataItem import PlotDataItem
 from .GraphicsWidgetAnchor import GraphicsWidgetAnchor
+from .BarGraphItem import BarGraphItem
 __all__ = ['LegendItem']
 
 
