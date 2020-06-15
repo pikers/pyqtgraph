@@ -49,8 +49,10 @@ class PlotItem(GraphicsWidget):
     It's main functionality is:
 
     - Manage placement of ViewBox, AxisItems, and LabelItems
-    - Create and manage a list of PlotDataItems displayed inside the ViewBox
-    - Implement a context menu with commonly used display and analysis options
+    - Create and manage a list of PlotDataItems displayed inside the
+      ViewBox
+    - Implement a context menu with commonly used display and analysis
+      options
 
     Use :func:`plot() <pyqtgraph.PlotItem.plot>` to create a new PlotDataItem and
     add it to the view. Use :func:`addItem() <pyqtgraph.PlotItem.addItem>` to
@@ -137,17 +139,11 @@ class PlotItem(GraphicsWidget):
         
         if viewBox is None:
             viewBox = ViewBox(parent=self)
-        self.vb = viewBox
-        self.vb.sigStateChanged.connect(self.viewStateChanged)
+
+        self.add_viewbox(viewBox, name)
+
         self.setMenuEnabled(enableMenu, enableMenu) ## en/disable plotitem and viewbox menus
-        
-        if name is not None:
-            self.vb.register(name)
-        self.vb.sigRangeChanged.connect(self.sigRangeChanged)
-        self.vb.sigXRangeChanged.connect(self.sigXRangeChanged)
-        self.vb.sigYRangeChanged.connect(self.sigYRangeChanged)
-        
-        self.layout.addItem(self.vb, 2, 1)
+
         self.alpha = 1.0
         self.autoAlpha = True
         self.spectrumMode = False
@@ -1214,3 +1210,22 @@ class PlotItem(GraphicsWidget):
         self.fileDialog.setAcceptMode(QtGui.QFileDialog.AcceptSave)
         self.fileDialog.show()
         self.fileDialog.fileSelected.connect(handler)
+
+    def add_viewbox(self, vb, name):
+        """Add or override the current ``ViewBox`` with a custom
+        subtype.
+
+        """
+
+        if issubclass(vb, ViewBox):
+            vb = vb(parent=self)
+
+        self.vb = vb
+        self.vb.sigStateChanged.connect(self.viewStateChanged)
+
+        if name is not None:
+            self.vb.register(name)
+        self.vb.sigRangeChanged.connect(self.sigRangeChanged)
+        self.vb.sigXRangeChanged.connect(self.sigXRangeChanged)
+        self.vb.sigYRangeChanged.connect(self.sigYRangeChanged)
+        self.layout.addItem(self.vb, 2, 1)
