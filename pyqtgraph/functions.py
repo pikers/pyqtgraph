@@ -2352,9 +2352,6 @@ def hdinv(A):
     return invA, True
 
 
-from .debug import Profiler
-
-
 def invertQTransform(tr):
     """Return a QTransform that is the inverse of *tr*.
     Raises an exception if tr is not invertible.
@@ -2362,25 +2359,13 @@ def invertQTransform(tr):
     Note that this function is preferred over QTransform.inverted() due to
     bugs in that method. (specifically, Qt has floating-point precision issues
     when determining whether a matrix is invertible)
+
     """
-    arr = np.array([[tr.m11(), tr.m12(), tr.m13()], [tr.m21(), tr.m22(), tr.m23()], [tr.m31(), tr.m32(), tr.m33()]])
-    profiler = Profiler(disabled=False, delayed=False)
-    profiler('pre transform calcs')
-
-    inv, invertable = hdinv(arr)
-    profiler('hdinv result')
-
-    ravel_t = QtGui.QTransform(*np.ravel(inv))
-    profiler('ravel speed')
-
-    index_t = QtGui.QTransform(inv[0,0], inv[0,1], inv[0,2], inv[1,0], inv[1,1], inv[1,2], inv[2,0], inv[2,1])
-    profiler('indexing speed')
-
     # see https://doc.qt.io/qt-5/qtransform.html#inverted
     qt_t, invertable = tr.inverted()
-    profiler('.inverted transform result: {}'.format(qt_t))
 
     # pretty sure the identity transform handles this
+    # but, if ``invertable == False``, ``qt_t`` is the identity transform.
     # if invertable is False:
     #     raise Exception("Transform is not invertible.")
 
